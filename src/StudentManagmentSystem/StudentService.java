@@ -1,5 +1,6 @@
 package StudentManagmentSystem;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ public class StudentService {
     private List<Student> students;
 
     public StudentService() {
-        this.students = new ArrayList<>();
+        loadFromFile();
     }
 
     public List<Student> getStudents() {
@@ -89,6 +90,19 @@ public class StudentService {
         System.out.printf("Lowest average: %.2f\n", min);
     }
 
+    public void saveToFile(){
+        try {
+            FileWriter fileWriter = new FileWriter("students.txt");
+            for(Student student: students){
+                String row = String.format("%d;%s;%s;%d;%.2f\n", student.getId(), student.getFirstName(), student.getLastName(), student.getFacNum(), averageGrade(student));
+                fileWriter.write(row);
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("Error occurred with writing into file");
+        }
+    }
+
     private double averageGrade(Student student){
         double sum = 0;
 
@@ -99,5 +113,25 @@ public class StudentService {
         return sum / student.getGrades().size();
     }
 
+    private void loadFromFile(){
+        try {
+            FileReader fileReader = new FileReader("students.txt");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            students = new ArrayList<>();
+            while((line = bufferedReader.readLine()) != null){
+                String[] data = line.split(";");
+                Student student = new Student(data[1], data[2], Integer.parseInt(data[3]));
+                student.setId(Integer.parseInt(data[0]));
+                student.getGrades().add(Double.parseDouble(data[4]));
+                students.add(student);
+            }
+            bufferedReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error occurred with opening file");
+        } catch (IOException e) {
+            System.out.println("Error occurred with reading file");
+        }
+    }
 
 }

@@ -33,4 +33,13 @@ public class Student {
     public List<Double> getGrades() {
         return grades;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 }
